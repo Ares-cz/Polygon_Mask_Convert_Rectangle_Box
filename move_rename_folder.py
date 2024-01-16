@@ -25,12 +25,13 @@ def rename_folder(folder_path, new_name):
     except Exception as e:
         print(f"重命名文件夹时出错: {e}")
 
+# 需要找到原始图像的路径和需要制作数据集的标签路径
 
-source_folder_image = "video_79_coco/images"  # 图像文件夹的路径
-source_folder_label_rectangle = "video_79_coco_converted/labels_rectangle"  # 标签文件夹的路径
-destination_root = "video_79_yolo_detection"  # 目标根目录的路径
+source_folder_image = "path_to_image_folder"  # 图像文件夹的路径
+source_folder_label_rectangle = "path_to_label_folder"  # 标签文件夹的路径
+destination_root = "path_to_direction_folder"  # 目标根目录的路径
 
-new_folder_name = "labels"  # 新的文件夹名称
+new_folder_name = "labels"  # 新的文件夹名称，这里是'labels'
 
 # 移动文件夹
 move_folder(source_folder_image, destination_root)
