@@ -1,5 +1,7 @@
 import os
 
+# 为了避免不同数据源产生的数据命名有重复
+# 需要对数据集中的图像和标签文件的文件名进行重命名，这里采取了添加前缀的方法
 
 def rename_files_in_folder(folder_path, prefix):
     for filename in os.listdir(folder_path):
@@ -19,7 +21,7 @@ def rename_files_in_folder(folder_path, prefix):
 prefix = "video_0079_"
 
 # 假设脚本与这些文件夹在同一根目录下
-root_path = "video_79_yolo_detection"  # 这里替换为你的根目录路径
+root_path = "path_to_root_folder"  # 这里替换为你的根目录路径
 
 # 分别重命名 images 和 labels 文件夹中的文件
 rename_files_in_folder(os.path.join(root_path, "images"), prefix)
