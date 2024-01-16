@@ -1,9 +1,10 @@
 import os
 import glob
 
+# 基于 convert_coco_to_yolo.py 中的返回路径
 # 设置原始标签文件夹和保存修改后的标签的文件夹
-original_labels_folder = 'video_78_coco_converted/labels/default'  # 用户提供的原始标签文件夹路径
-save_folder = 'video_78_coco_converted/labels_rectangle'  # 用户应该替换为自己的保存文件夹路径
+original_labels_folder = 'path_to_source_annotations_folder'  # 用户提供的原始标签文件夹路径
+save_folder = 'path_to_save_annotation_folder'  # 用户应该替换为自己的保存文件夹路径
 
 # 确保保存文件夹存在
 os.makedirs(save_folder, exist_ok=True)
