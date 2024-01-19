@@ -1,28 +1,41 @@
 import os
 
-# 为了避免不同数据源产生的数据命名有重复
-# 需要对数据集中的图像和标签文件的文件名进行重命名，这里采取了添加前缀的方法
+def rename_files_in_folder(prefix, root_path, sub_path=None):
+    """
+    Rename all files in a specified directory by adding a prefix to their names.
 
-def rename_files_in_folder(folder_path, prefix):
+    This function iterates over all files in a given directory (and optionally a subdirectory) and renames them by
+    prefixing their current names with a specified string. This is useful for batch renaming of files for organization
+    or clarity.
+
+    :param prefix: String to be added as a prefix to each file name in the directory.
+    :param root_path: String representing the path to the root directory containing the files to be renamed.
+    :param sub_path: Optional string representing the path to a subdirectory within the root directory. If provided,
+                     only files within this subdirectory will be renamed. If None, files directly in the root directory
+                     will be renamed.
+    :return: None. The function prints a confirmation message upon successfully renaming all files.
+    """
+    folder_path = root_path if sub_path is None else os.path.join(root_path, sub_path)
+
     for filename in os.listdir(folder_path):
-        # 构建完整的文件路径
+        # Create a completed path to access the file
         old_file = os.path.join(folder_path, filename)
 
-        # 只有在文件路径确实是文件的情况下才进行操作
         if os.path.isfile(old_file):
-            # 构建新的文件名
+            # Create new file name
             new_file = os.path.join(folder_path, prefix + filename)
 
-            # 重命名文件
+            # Rename the file
             os.rename(old_file, new_file)
+    print(f"Files in the folder '{folder_path}' have been renamed by adding prefix '{prefix}'.")
 
+if __name__ == '__main__':
+    # 定义你想要的前缀
+    prefix = "video_0079_"
 
-# 定义你想要的前缀
-prefix = "video_0079_"
+    # 假设脚本与这些文件夹在同一根目录下
+    root_path = "video_79_yolo_detection"  # 这里替换为你的根目录路径
 
-# 假设脚本与这些文件夹在同一根目录下
-root_path = "path_to_root_folder"  # 这里替换为你的根目录路径
-
-# 分别重命名 images 和 labels 文件夹中的文件
-rename_files_in_folder(os.path.join(root_path, "images"), prefix)
-rename_files_in_folder(os.path.join(root_path, "labels"), prefix)
+    # 分别重命名 images 和 labels 文件夹中的文件
+    rename_files_in_folder(root_path, 'images', prefix)
+    rename_files_in_folder(root_path, 'labels', prefix)
