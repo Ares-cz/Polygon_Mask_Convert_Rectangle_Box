@@ -1,6 +1,6 @@
 # Convert_COCO_to_YOLO_Convert_Polygon_to_Rectangle_Split_dataset
 
-# 标注数据处理流程
+
 
 ### 简介
 
@@ -10,7 +10,7 @@
 
 同时，由于数据集来源于不同的视频，因此导出、转换后，所有数据集并为进行整合，同时也存在不同视频产生的数据的文件名相同，因此需要对不同的数据进行合并，再进一步划分训练、验证、测试的数据集。
 
-YOLO的数据集文件结构如下：
+##### YOLO的数据集文件结构如下：
 
 ```bash
 dataset/
@@ -43,42 +43,72 @@ dataset/
 ```
 
 
-### 具体流程
 
-1. 从CAVT标注后下载COCO数据集，可以得到json格式的标注信息；下载MOTS数据集，可以得到instance格式的标注信息
-   - 使用`convert_coco_to_yolo.py`
-   - 将coco数据集转换为yolo数据集，转换后得到`/labels`文件夹下的`.txt`文件
+##### 文件结构
 
-2. 对于YOLO检测（这里考虑矩形标注下的detection任务）
+````bash
+Conver_Collect_Dataset.py
+├──	convert_coco_to_yolo.py
+│   ├── folder_file_process.py
+├── rename.py
+├── convert_polygon_to_rectangle.py
+├── folder_file_process.py
 
-   - 使用`convert_polygon_to_rectangle.py`
-   - 将多边形masks转换为矩形boxes，存放包含boxes的文件夹命在`/labels`后存在后缀，以便与masks的`/labels`文件夹区分
-3. 对于文件夹的移动和重命名
-   - 由于images存在于coco数据集中，labels存在于转换后的yolo数据集中，因此需要将其移动到一起，使用`move_rename_folder.py`
-   - 将`/images`和`/lables`移动到一起，含有后缀的boxes的`/labels`文件夹，重命名为`/labels`
-   - 移动后，需要对images和labels文件夹内的所有文件进行重命名，以便于汇总后，与其他数据集来源的数据进行区分。这里的做法是添加包含视频名称的前缀，使用`rename.py`
-   - 在数据重命名后，需要将所有数据汇总到一起。这里采用的方法是新建一个根文件夹，并将需要汇总的数据添加到这里，这样做可以提高后续数据集的可扩展性，使用`add_file_to_dataset.py`
-4. 对数据集进行划分
-   - 这里将在step 3中最后汇总数据的文件夹内，划分数据集。
-   - 其可以自行调整`train`，`valid`，`test`的比例
+Split_Dataset.py
+````
 
 
-### 需要完善功能
 
-1. 将数据集划分在另一个空间内，这样保持数据汇总的目录下可以扩充数据集。
-2. 仍需要对整体流程进行优化，减少数据重复，以及避免多次生成文件夹。
+### 功能说明
+
+功能实现，分为两个部分：
+
+1. 转换数据集，并汇总到数据容器中
+
+具体而言，在使用前，需要准备一个包含图像的COCO格式的标注数据集
+
+其文件结构如下：
+
+ ````bash
+COCO/
+├── images/
+│   ├── image1.jpg
+│   ├── image2.jpg
+│   └── ...
+├── annotations/
+│   └── annotations.json
+ ````
 
 
---------------------------------------------------------------
-### Brief script introduction
-#### Convert_COCO_to_YOLO
-   - convert_coco_to_yolo.py
 
-#### Convert_Polygon_to_Rectangle_labels
-   - convert_polygon_to_rectangle.py
+使用时，`Convert_Collect_Dataset.py `将调用`convert_coco_to_yolo.py `把coco路径下的annotations文件夹中的`.json`转换为YOLO需要的`.txt`文件
 
-#### Split_dataset
-   - move_rename_folder.py
-   - rename.py
-   - add_file_to_dataset.py
-   - split_dataset.py
+之后将由`rename.py` 对所有标签文件名进行修改，即增加前缀
+
+随后`convert_polygon_to_rectangle.py`将会把多边形标注转换为矩形标注，并保存至指定的数据集容器
+
+标签处理完成后，将对图像进行改名，同样使用了`rename.py`，增加前缀
+
+然后，移动图像到指定的数据集容器
+
+
+
+2. 从数据容器中读取数据并按比例划分train, valid, test数据集到指定路径
+
+`Split_Dataset.py`将从数据集容器中读取相应文件，随机划分数据集
+
+### 使用说明
+
+- `Convert_Collect_Dataset.py`
+  - 提供COCO格式标签数据集的根目录
+  - 需要给文件改名所需的前缀
+  - 数据容器的路径
+
+
+
+- `Split_Dataset.py`
+  - 给`root_path`提供数据容器的根路径
+  - 指定一个保存划分好数据集饿路径 `save_path`
+
+### 改进点
+- 对于分割数据集可以增加检查目标路径是否为空，若不为空可以选择删除路径内文件后，再执行拷贝
